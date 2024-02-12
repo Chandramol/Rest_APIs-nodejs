@@ -1,0 +1,12 @@
+// REST API -JSON
+
+GET/users - List of all users
+
+GET/users/1 - List user with ID 1
+GET/users/2 - List user with ID 2
+
+POST/users/1 - Add user with ID 1
+
+PATCH/users/1 - Edit data with ID 1
+
+DELETE/users/1 - Delete User with ID 1

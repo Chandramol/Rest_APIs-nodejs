@@ -8,7 +8,7 @@ const users = require("./MOCK_DATA.json");
 
 // Middelware -plugins
 app.use(express.urlencoded({ extended: false }));
-const fs = require("fs");
+const fs = require("fs"); 
 
 //Routes
 // get request

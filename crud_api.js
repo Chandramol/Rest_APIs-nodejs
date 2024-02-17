@@ -1,18 +1,21 @@
+// CRUD operation with APIs with fake database files
+
 // server
 const express = require("express");
 const app = express();
 const port = 3000;
 
+// importing database
+const users = require("./MOCK_DATA.json");
+
 // Middelware -plugins
 app.use(express.urlencoded({ extended: false }));
+const fs = require("fs"); 
 
-// importing connection pool functions
-const { getUsers, createUser } = require("./app");
-
-//Routes for APIs
+//Routes
 // get request
-app.get("/users", async (req, res) => {
-  res.json(await getUsers());
+app.get("/users", (req, res) => {
+  return res.json(users);
 });
 
 // get dynamic user with ID
@@ -66,16 +69,13 @@ app
   });
 
 // post request - Create new user
-app.post("/users", async (req, res) => {
-  try {
-    const body = req.body;
-    console.log("body", body);
-    await createUser(body); // Use createUser to insert the data into the database
-    res.json({ message: "Success", data: body });
-  } catch (error) {
-    console.error("Error:", error);
-    res.status(500).json({ message: "Failed to create user" });
-  }
+app.post("/users", (req, res) => {
+  const body = req.body;
+  console.log("body", body);
+  users.push({ ...body, id: users.length + 1 });
+  fs.writeFile("./MOCK_DATA.json", JSON.stringify(users), (err, data) => {
+    return res.json({ message: "Sucess", id: users.length });
+  });
 });
 
 // server listing

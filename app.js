@@ -6,7 +6,7 @@ const pool = mysql.createPool({
   host: "127.0.0.1",
   user: "root",
   password: "",
-  database: "exampledb",
+  database: "gerContactDb",
   waitForConnections: true,
   connectionLimit: 10,
   queueLimit: 0,
@@ -31,7 +31,7 @@ function getUsers() {
   return new Promise(async (resolve, reject) => {
     try {
       const connection = await getConnection();
-      const sql = "SELECT * FROM dev_details";
+      const sql = "SELECT * FROM user_details";
       connection.query(sql, (err, results) => {
         connection.release(); // Make sure to release the connection
         if (err) {
@@ -53,10 +53,16 @@ function createUser(userData) {
       const connection = await getConnection();
       const id = Math.floor(Math.random() * 10000);
       const sql =
-        "INSERT INTO dev_details (id,dev_name, email, gender) VALUES (?,?, ?, ?)";
+        "INSERT INTO user_details (id,name, email, phone,address) VALUES (?,?, ?, ?,?)";
       connection.query(
         sql,
-        [id, userData.dev_name, userData.email, userData.gender],
+        [
+          id,
+          userData.name,
+          userData.email,
+          userData.phone,
+          userData.address,
+        ],
         (err, results) => {
           connection.release();
           if (err) {
@@ -66,6 +72,7 @@ function createUser(userData) {
             resolve(results);
           }
         }
+        
       );
     } catch (error) {
       reject(error);

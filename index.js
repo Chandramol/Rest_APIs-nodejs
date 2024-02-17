@@ -4,8 +4,10 @@ const app = express();
 const port = 3000;
 
 // Middelware -plugins
-app.use(express.urlencoded({ extended: false }));
-
+app.use(express.json()); // for the frontend hitting apis of post
+// app.use(express.urlencoded({ extended: false }));  // for the postman hitting of api of post
+const cors = require('cors'); // Import the cors middleware
+app.use(cors());
 // importing connection pool functions
 const { getUsers, createUser } = require("./app");
 

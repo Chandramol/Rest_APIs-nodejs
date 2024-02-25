@@ -33,7 +33,7 @@ function getUsers() {
       const connection = await getConnection();
       const sql = "SELECT * FROM user_details";
       connection.query(sql, (err, results) => {
-        connection.release(); // Make sure to release the connection
+        connection.release();
         if (err) {
           reject("Error executing query:", err);
         } else {
@@ -46,6 +46,7 @@ function getUsers() {
     }
   });
 }
+
 // create new user
 function createUser(userData) {
   return new Promise(async (resolve, reject) => {
@@ -56,13 +57,7 @@ function createUser(userData) {
         "INSERT INTO user_details (id,name, email, phone,address) VALUES (?,?, ?, ?,?)";
       connection.query(
         sql,
-        [
-          id,
-          userData.name,
-          userData.email,
-          userData.phone,
-          userData.address,
-        ],
+        [id, userData.name, userData.email, userData.phone, userData.address],
         (err, results) => {
           connection.release();
           if (err) {
@@ -72,7 +67,6 @@ function createUser(userData) {
             resolve(results);
           }
         }
-        
       );
     } catch (error) {
       reject(error);
@@ -80,4 +74,59 @@ function createUser(userData) {
   });
 }
 
-module.exports = { getUsers, createUser };
+// delete user
+function deleteUser(id) {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const connection = await getConnection();
+      const sql = `DELETE FROM user_details WHERE id = ${id}`;
+
+      connection.query(sql, (error, results) => {
+        if (error) {
+          reject("Error deleting query", error);
+        } else {
+          resolve("delete results", results);
+        }
+        connection.release();
+      });
+    } catch (error) {
+      reject(error);
+    }
+  });
+}
+
+// edit user
+function editUser(id, data) {
+  console.log(id, data, "edit");
+  return new Promise(async (resolve, reject) => {
+    try {
+      const connection = await getConnection();
+      const sql = "UPDATE user_details SET ? WHERE id = ?";
+
+      connection.query(
+        sql,
+        [
+          {
+            name: data.name,
+            email: data.email,
+            phone: data.phone,
+            address: data.address,
+          },
+          id,
+        ],
+        (error, results) => {
+          if (error) {
+            reject("Error editing query", error);
+          } else {
+            resolve("edited results", results);
+          }
+          connection.release();
+        }
+      );
+    } catch (error) {
+      reject(error);
+    }
+  });
+}
+
+module.exports = { getUsers, createUser, deleteUser, editUser };

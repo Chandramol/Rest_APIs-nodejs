@@ -13,7 +13,7 @@ const cors = require("cors"); // Import the cors middleware
 app.use(cors());
 
 // importing connection pool functions from database
-const { getUsers, createUser, deleteUser, editUser } = require("./app");
+const { getUsers, createUser, deleteUser, editUser, createNewMember, getMember } = require("./app");
 
 // get request
 app.get("/users", async (req, res) => {
@@ -23,6 +23,7 @@ app.get("/users", async (req, res) => {
 // post request
 app.post("/users", async (req, res) => {
   try {
+    console.log(req, 'res');
     const body = req.body;
     console.log("body", body);
     await createUser(body); // to insert the data into the database
@@ -60,7 +61,26 @@ app.patch("/users/:id", async (req, res) => {
   }
 });
 
+
+// memeber realated funtions
+// get all members
+app.get("/addnewmember", async (req, res) => {
+  res.json(await getMember());
+});
+// add new member
+app.post("/addnewmember", async (req, res) => {
+  try {
+    const body = req.body;
+    console.log("body", body);
+    await createNewMember(body); // to insert the data into the database
+    res.json({ message: "Success", data: body });
+  } catch (error) {
+    console.error("Error:", error);
+    res.status(500).json({ message: "Failed to create new member" });
+  }
+});
+
 // server listing
 app.listen(port, () => {
-  console.log("Server is Started...");
+  console.log("Server is Started...", port);
 });

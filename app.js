@@ -6,7 +6,7 @@ const pool = mysql.createPool({
   host: "127.0.0.1",
   user: "root",
   password: "",
-  database: "gerContactDb",
+  database: "getinquireirsdb",
   waitForConnections: true,
   connectionLimit: 10,
   queueLimit: 0,
@@ -31,7 +31,7 @@ function getUsers() {
   return new Promise(async (resolve, reject) => {
     try {
       const connection = await getConnection();
-      const sql = "SELECT * FROM user_details";
+      const sql = "SELECT * FROM inquiry_details";
       connection.query(sql, (err, results) => {
         connection.release();
         if (err) {
@@ -54,7 +54,7 @@ function createUser(userData) {
       const connection = await getConnection();
       const id = Math.floor(Math.random() * 10000);
       const sql =
-        "INSERT INTO user_details (id,name, email, phone,address) VALUES (?,?, ?, ?,?)";
+        "INSERT INTO inquiry_details (id,name, email, phone,address) VALUES (?, ?, ?, ?,?)";
       connection.query(
         sql,
         [id, userData.name, userData.email, userData.phone, userData.address],
@@ -79,7 +79,7 @@ function deleteUser(id) {
   return new Promise(async (resolve, reject) => {
     try {
       const connection = await getConnection();
-      const sql = `DELETE FROM user_details WHERE id = ${id}`;
+      const sql = `DELETE FROM inquiry_details WHERE id = ${id}`;
 
       connection.query(sql, (error, results) => {
         if (error) {
@@ -101,7 +101,7 @@ function editUser(id, data) {
   return new Promise(async (resolve, reject) => {
     try {
       const connection = await getConnection();
-      const sql = "UPDATE user_details SET ? WHERE id = ?";
+      const sql = "UPDATE inquiry_details SET ? WHERE id = ?";
 
       connection.query(
         sql,
@@ -129,4 +129,55 @@ function editUser(id, data) {
   });
 }
 
-module.exports = { getUsers, createUser, deleteUser, editUser };
+// add new members
+// get all member
+function getMember() {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const connection = await getConnection();
+      const sql = "SELECT * FROM add_new_member";
+      connection.query(sql, (err, results) => {
+        connection.release();
+        if (err) {
+          reject("Error executing query:", err);
+        } else {
+          console.log("Query results:", results);
+          resolve(results);
+        }
+      });
+    } catch (error) {
+      reject(error);
+    }
+  });
+}
+
+// create new member
+function createNewMember(userData) {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const connection = await getConnection();
+      // const id = Math.floor(Math.random() * 10000);
+      const sql =
+        "INSERT INTO add_new_member (first_name,last_name,mobile,home_mobile, email,adhar) VALUES (?, ?, ?,?,?,?)";
+      connection.query(
+        sql,
+        [userData.first_name, userData.last_name, userData.mobile, userData.home_mobile, userData.email, userData.adhar],
+        (err, results) => {
+          connection.release();
+          if (err) {
+            console.error("Error executing insert query:", err);
+            reject("Error executing insert query:", err);
+          } else {
+            console.log("Insert results:", results);
+            resolve(results);
+          }
+        }
+      );
+    } catch (error) {
+      console.error("Error in createNewMember:", error);
+      reject(error);
+    }
+  });
+}
+
+module.exports = { getUsers, createUser, deleteUser, editUser, createNewMember,getMember };

@@ -156,12 +156,28 @@ function createNewMember(userData) {
   return new Promise(async (resolve, reject) => {
     try {
       const connection = await getConnection();
-      // const id = Math.floor(Math.random() * 10000);
+      const id = Math.floor(Math.random() * 10000);
+      console.log(id,'id')
       const sql =
-        "INSERT INTO add_new_member (first_name,last_name,mobile,home_mobile, email,adhar) VALUES (?, ?, ?,?,?,?)";
+        "INSERT INTO add_new_member (id,first_name,last_name,mobile,home_mobile, email,address,birth_date,joining_date,ending_date,package,amount,adhar,remark) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
       connection.query(
         sql,
-        [userData.first_name, userData.last_name, userData.mobile, userData.home_mobile, userData.email, userData.adhar],
+        [
+          id,
+          userData.first_name,
+          userData.last_name,
+          userData.mobile,
+          userData.home_mobile,
+          userData.email,
+          userData.address,
+          userData.birth_date,
+          userData.joining_date,
+          userData.ending_date,
+          userData.package,
+          userData.amount,
+          userData.adhar,
+          userData.remark,
+        ],
         (err, results) => {
           connection.release();
           if (err) {
@@ -180,4 +196,55 @@ function createNewMember(userData) {
   });
 }
 
-module.exports = { getUsers, createUser, deleteUser, editUser, createNewMember,getMember };
+// edit member
+function editExistMember(id, data) {
+  console.log(id, data, "edit");
+  return new Promise(async (resolve, reject) => {
+    try {
+      const connection = await getConnection();
+      const sql = "UPDATE add_new_member SET ? WHERE id = ?";
+
+      connection.query(
+        sql,
+        [
+          {
+            first_name: data.first_name,
+            last_name: data.last_name,
+            mobile: data.mobile,
+            home_mobile: data.home_mobile,
+            email: data.email,
+            address: data.address,
+            birth_date: data.birth_date,
+            joining_date: data.joining_date,
+            ending_date: data.ending_date,
+            package: data.package,
+            amount: data.amount,
+            adhar: data.adhar,
+            remark: data.remark,
+          },
+          id,
+        ],
+        (error, results) => {
+          if (error) {
+            reject("Error editing query", error);
+          } else {
+            resolve("edited results", results);
+          }
+          connection.release();
+        }
+      );
+    } catch (error) {
+      reject(error);
+    }
+  });
+}
+
+module.exports = {
+  getUsers,
+  createUser,
+  deleteUser,
+  editUser,
+  createNewMember,
+  getMember,
+  editExistMember
+};

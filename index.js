@@ -13,7 +13,7 @@ const cors = require("cors"); // Import the cors middleware
 app.use(cors());
 
 // importing connection pool functions from database
-const { getUsers, createUser, deleteUser, editUser, createNewMember, getMember } = require("./app");
+const { getUsers, createUser, deleteUser, editUser, createNewMember, getMember,editExistMember } = require("./app");
 
 // get request
 app.get("/users", async (req, res) => {
@@ -61,12 +61,12 @@ app.patch("/users/:id", async (req, res) => {
   }
 });
 
-
 // memeber realated funtions
 // get all members
 app.get("/addnewmember", async (req, res) => {
   res.json(await getMember());
 });
+
 // add new member
 app.post("/addnewmember", async (req, res) => {
   try {
@@ -77,6 +77,20 @@ app.post("/addnewmember", async (req, res) => {
   } catch (error) {
     console.error("Error:", error);
     res.status(500).json({ message: "Failed to create new member" });
+  }
+});
+
+// edit exist member
+app.patch("/addnewmember/:id", async (req, res) => {
+  try {
+    let id = Number(req.params.id);
+    let body = req.body;
+    console.log(req.params, body, "req.body edit");
+    await editExistMember(id, body);
+    res.json({ message: "Success to edit", data: { id: id, data: body } });
+  } catch (error) {
+    console.error("Error:", error);
+    res.status(500).json({ message: "Failed to edit user" });
   }
 });
 

@@ -157,9 +157,8 @@ function createNewMember(userData) {
     try {
       const connection = await getConnection();
       const id = Math.floor(Math.random() * 10000);
-      console.log(id,'id')
       const sql =
-        "INSERT INTO add_new_member (id,first_name,last_name,mobile,home_mobile, email,address,birth_date,joining_date,ending_date,package,amount,adhar,remark) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+        "INSERT INTO add_new_member (id,first_name,last_name,mobile,home_mobile, email,address,birth_date,joining_date,ending_date,package,adhar,remark,total_payment,paid_amt,pending_amt) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
       connection.query(
         sql,
         [
@@ -174,9 +173,11 @@ function createNewMember(userData) {
           userData.joining_date,
           userData.ending_date,
           userData.package,
-          userData.amount,
           userData.adhar,
           userData.remark,
+          userData.total_payment,
+          userData.paid_amt,
+          userData.pending_amt,
         ],
         (err, results) => {
           connection.release();
@@ -213,14 +214,16 @@ function editExistMember(id, data) {
             mobile: data.mobile,
             home_mobile: data.home_mobile,
             email: data.email,
+            adhar: data.adhar,
             address: data.address,
             birth_date: data.birth_date,
             joining_date: data.joining_date,
             ending_date: data.ending_date,
             package: data.package,
-            amount: data.amount,
-            adhar: data.adhar,
             remark: data.remark,
+            total_payment: data.total_payment,
+            paid_amt: data.paid_amt,
+            pending_amt: data.pending_amt,
           },
           id,
         ],

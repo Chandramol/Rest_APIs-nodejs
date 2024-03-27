@@ -26,6 +26,55 @@ function getConnection() {
   });
 }
 
+// login related apis
+function getUserLogin() {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const connection = await getConnection()
+      const sql = "SELECT * FROM login_details";
+      connection.query(sql, (err, results) => {
+        if (err) {
+          reject("Error executing query:", err);
+        }
+        else {
+          console.log("Query results:", results);
+          resolve(results);
+        }
+      })
+    } catch (error) {
+      reject(error);
+    }
+  })
+}
+
+// post login
+function createLoginUser(data) {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const connection = await getConnection();
+      const user_id = Math.floor(Math.random() * 10000);
+      const sql =
+        "INSERT INTO login_details (user_id,username, password, superUser) VALUES (?, ?, ?, ?)";
+      connection.query(
+        sql,
+        [user_id, data.username, data.password, data.superUser],
+        (err, results) => {
+          connection.release();
+          if (err) {
+            reject("Error executing insert query:", err);
+          } else {
+            console.log("Insert results:", results);
+            resolve(results);
+          }
+        }
+      );
+    } catch (error) {
+      reject(error);
+    }
+  });
+}
+
+// inquiry persons
 //  getUsers
 function getUsers() {
   return new Promise(async (resolve, reject) => {
@@ -242,6 +291,53 @@ function editExistMember(id, data) {
   });
 }
 
+// package list
+// get packages
+function getPackageList() {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const connection = await getConnection()
+      const sql = "SELECT * FROM package_list";
+      connection.query(sql, (err, results) => {
+        connection.release();
+        if (err) {
+          reject("Error executing query:", err);
+        } else {
+          console.log("Query results:", results);
+          resolve(results);
+        }
+      });
+    } catch (error) {
+      reject(error);
+    }
+  })
+}
+
+function addNewPackage(data) {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const connection = await getConnection()
+      const id = Math.floor(Math.random() * 10000);
+      const sql = "INSERT INTO package_list (id, package_type, package_duration, package_price) VALUES (?,?,?,?)"
+      connection.query(
+        sql,
+        [id, data.package_type, data.package_duration, data.package_price],
+        (err, results) => {
+          connection.release();
+          if (err) {
+            reject("Error executing insert query:", err);
+          } else {
+            console.log("Insert results:", results);
+            resolve(results);
+          }
+        }
+      );
+    } catch (error) {
+      reject(error);
+    }
+  })
+}
+
 module.exports = {
   getUsers,
   createUser,
@@ -249,5 +345,9 @@ module.exports = {
   editUser,
   createNewMember,
   getMember,
-  editExistMember
+  editExistMember,
+  getPackageList,
+  addNewPackage,
+  getUserLogin,
+  createLoginUser
 };

@@ -13,24 +13,53 @@ const cors = require("cors"); // Import the cors middleware
 app.use(cors());
 
 // importing connection pool functions from database
-const { getUsers, createUser, deleteUser, editUser, createNewMember, getMember, editExistMember, getPackageList, addNewPackage, getUserLogin, createLoginUser } = require("./app");
+const { getUsers, createUser, deleteUser, editUser, createNewMember, getMember, editExistMember, getPackageList, addNewPackage, loginAuth, createLoginUser,getUserLogin } = require("./app");
 
 
 // login request
-// get
-app.get("/login", async (req, res) => {
-  res.json(await getUserLogin());
-})
-
-// post
-app.post("/login", async (req, res) => {
+// post -login register
+app.post("/register", async (req, res) => {
   try {
     const body = req.body;
-    console.log("body", body);
     await createLoginUser(body);
+    res.json({ message: "Success", data: body });
   } catch (error) {
     console.error("Error:", error);
     res.status(500).json({ message: "Failed to login user" });
+  }
+})
+
+// post -login match
+app.post("/login", async (req, res) => {
+  try {
+    const body = req.body 
+    if(body){
+      const result =await loginAuth(body)
+      if(result.success){
+        res.status(200).json({ body, message: "login success" })
+      }
+      else{
+        res.status(401).json({ message: "Incorrect chajkjhdgk username or password" });
+      }
+    }
+    else{
+      res.status(400).json({ message: "Bad request" });
+    }
+  } catch (error) {
+    res.status(500).json({ message: "Failed to login user" });
+  }
+})
+
+// to get all users
+app.get('/register',async(req,res)=>{
+  try {
+    const response = await getUserLogin()
+    console.log(response,'response');
+    if(response){
+      res.status(200).json(response)
+    }
+  } catch (error) {
+    res.status(500).json({message:"Failed to get all Users"})
   }
 })
 
@@ -43,7 +72,6 @@ app.get("/users", async (req, res) => {
 // post request
 app.post("/users", async (req, res) => {
   try {
-    console.log(req, 'res');
     const body = req.body;
     console.log("body", body);
     await createUser(body); // to insert the data into the database

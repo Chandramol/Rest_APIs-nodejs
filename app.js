@@ -1,5 +1,7 @@
 // Database
 const mysql = require("mysql2");
+// bycrypt for password
+const bcrypt = require('bcrypt');
 
 // Create a connection pool
 const pool = mysql.createPool({
@@ -47,7 +49,7 @@ function getUserLogin() {
   })
 }
 
-// post login
+// post login- register
 function createLoginUser(data) {
   return new Promise(async (resolve, reject) => {
     try {
@@ -63,11 +65,40 @@ function createLoginUser(data) {
           if (err) {
             reject("Error executing insert query:", err);
           } else {
-            console.log("Insert results:", results);
             resolve(results);
           }
         }
       );
+    } catch (error) {
+      reject(error);
+    }
+  });
+}
+
+function loginAuth(data) {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const connection = await getConnection();
+      const sql = "SELECT * FROM login_details WHERE email = ?";
+      connection.query(sql, [data.email], async (err, results) => {
+        connection.release();
+        if (err) {
+          reject("Error executing query:", err);
+        } else {
+          if (results.length > 0) {
+            // const isPasswordCorrect = await bcrypt.compare(data.password, results[0].password);
+            // console.log(data.password,"===",results[0].password);
+            if (data.password===results[0].password) {
+            // if (isPasswordCorrect) {
+              resolve({ success: true, user: results[0] });
+            } else {
+              resolve({ success: false, message: "Incorrect email or password" });
+            }
+          } else {
+            resolve({ success: false, message: "Enter email or password" });
+          }
+        }
+      });
     } catch (error) {
       reject(error);
     }
@@ -349,5 +380,6 @@ module.exports = {
   getPackageList,
   addNewPackage,
   getUserLogin,
-  createLoginUser
+  createLoginUser,
+  loginAuth
 };

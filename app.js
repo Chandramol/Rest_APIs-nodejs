@@ -3,6 +3,7 @@ const mysql = require("mysql2");
 // bycrypt for password
 const bcrypt = require('bcrypt');
 
+
 // Create a connection pool
 const pool = mysql.createPool({
   host: "127.0.0.1",

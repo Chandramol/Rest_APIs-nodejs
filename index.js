@@ -12,8 +12,11 @@ app.use(express.urlencoded({ extended: false }));
 const cors = require("cors"); // Import the cors middleware
 app.use(cors());
 
+// json token 
+const jsonToken = require("jsonwebtoken")
+
 // importing connection pool functions from database
-const { getUsers, createUser, deleteUser, editUser, createNewMember, getMember, editExistMember, getPackageList, addNewPackage, loginAuth, createLoginUser,getUserLogin } = require("./app");
+const { getUsers, createUser, deleteUser, editUser, createNewMember, getMember, editExistMember, getPackageList, addNewPackage, loginAuth, createLoginUser, getUserLogin } = require("./app");
 
 
 // login request
@@ -30,36 +33,38 @@ app.post("/register", async (req, res) => {
 })
 
 // post -login match
+const secretKey = 'ABCDEFGHIJKLMNOPQRSTUVWXYZPQRSTU'; 
 app.post("/login", async (req, res) => {
   try {
-    const body = req.body 
-    if(body){
-      const result =await loginAuth(body)
-      if(result.success){
-        res.status(200).json({ body, message: "login success" })
+    const body = req.body;
+    if (body) {
+      const result = await loginAuth(body);
+      if (result.success) {
+        // let uniqueId = result.user.user_id;
+        // Sign the JWT
+        // let token = jwt.sign({ uniqueId }, secretKey, { expiresIn: '1h' }); 
+        res.status(200).json({ result, message: "Login success" });
+      } else {
+        res.status(401).json({ message: "Incorrect username or password" });
       }
-      else{
-        res.status(401).json({ message: "Incorrect chajkjhdgk username or password" });
-      }
-    }
-    else{
+    } else {
       res.status(400).json({ message: "Bad request" });
     }
   } catch (error) {
     res.status(500).json({ message: "Failed to login user" });
   }
-})
+});
 
 // to get all users
-app.get('/register',async(req,res)=>{
+app.get('/register', async (req, res) => {
   try {
     const response = await getUserLogin()
-    console.log(response,'response');
-    if(response){
+    console.log(response, 'response');
+    if (response) {
       res.status(200).json(response)
     }
   } catch (error) {
-    res.status(500).json({message:"Failed to get all Users"})
+    res.status(500).json({ message: "Failed to get all Users" })
   }
 })
 

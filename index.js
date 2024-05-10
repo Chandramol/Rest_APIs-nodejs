@@ -40,10 +40,10 @@ app.post("/login", async (req, res) => {
     if (body) {
       const result = await loginAuth(body);
       if (result.success) {
-        // let uniqueId = result.user.user_id;
+        let uniqueId = result.user.user_id;
         // Sign the JWT
-        // let token = jwt.sign({ uniqueId }, secretKey, { expiresIn: '1h' }); 
-        res.status(200).json({ result, message: "Login success" });
+        let token = jsonToken.sign({ uniqueId }, secretKey); 
+        res.status(200).json({ result, message: "Login success", accesss_token:token });
       } else {
         res.status(401).json({ message: "Incorrect username or password" });
       }
@@ -51,6 +51,7 @@ app.post("/login", async (req, res) => {
       res.status(400).json({ message: "Bad request" });
     }
   } catch (error) {
+    console.log(error);
     res.status(500).json({ message: "Failed to login user" });
   }
 });
@@ -59,7 +60,7 @@ app.post("/login", async (req, res) => {
 app.get('/register', async (req, res) => {
   try {
     const response = await getUserLogin()
-    console.log(response, 'response');
+    // console.log(response, 'response');
     if (response) {
       res.status(200).json(response)
     }
@@ -78,7 +79,7 @@ app.get("/users", async (req, res) => {
 app.post("/users", async (req, res) => {
   try {
     const body = req.body;
-    console.log("body", body);
+    // console.log("body", body);
     await createUser(body); // to insert the data into the database
     res.json({ message: "Success", data: body });
   } catch (error) {
@@ -124,7 +125,7 @@ app.get("/addnewmember", async (req, res) => {
 app.post("/addnewmember", async (req, res) => {
   try {
     const body = req.body;
-    console.log("body", body);
+    // console.log("body", body);
     await createNewMember(body); // to insert the data into the database
     res.json({ message: "Success", data: body });
   } catch (error) {
@@ -161,7 +162,7 @@ app.get("/packages", async (req, res) => {
 app.post("/packages", async (req, res) => {
   try {
     const body = req.body;
-    console.log("body", body);
+    // console.log("body", body);
     await addNewPackage(body);
     res.json({ message: "Success", data: body });
   } catch (error) {

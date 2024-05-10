@@ -89,8 +89,8 @@ function loginAuth(data) {
           if (results.length > 0) {
             // const isPasswordCorrect = await bcrypt.compare(data.password, results[0].password);
             // console.log(data.password,"===",results[0].password);
-            if (data.password===results[0].password) {
-            // if (isPasswordCorrect) {
+            if (data.password === results[0].password) {
+              // if (isPasswordCorrect) {
               resolve({ success: true, user: results[0] });
             } else {
               resolve({ success: false, message: "Incorrect email or password" });

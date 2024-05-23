@@ -40,7 +40,7 @@ function getUserLogin() {
           reject("Error executing query:", err);
         }
         else {
-          console.log("Query results:", results);
+          // console.log("Query results:", results);
           resolve(results);
         }
       })
@@ -57,13 +57,14 @@ function createLoginUser(data) {
       const connection = await getConnection();
       const user_id = Math.floor(Math.random() * 10000);
       const sql =
-        "INSERT INTO login_details (user_id,username, password, superUser) VALUES (?, ?, ?, ?)";
+        "INSERT INTO login_details (user_id, email, password, superUser) VALUES (?, ?, ?, ?)";
       connection.query(
         sql,
-        [user_id, data.username, data.password, data.superUser],
+        [user_id, data.email, data.password, data.superUser],
         (err, results) => {
           connection.release();
           if (err) {
+            console.log(err);
             reject("Error executing insert query:", err);
           } else {
             resolve(results);
@@ -135,10 +136,10 @@ function createUser(userData) {
       const connection = await getConnection();
       const id = Math.floor(Math.random() * 10000);
       const sql =
-        "INSERT INTO inquiry_details (id,name, email, phone,address) VALUES (?, ?, ?, ?,?)";
+        "INSERT INTO inquiry_details (id,name, email, phone,address,isReference) VALUES (?, ?, ?, ?,?,?)";
       connection.query(
         sql,
-        [id, userData.name, userData.email, userData.phone, userData.address],
+        [id, userData.name, userData.email, userData.phone, userData.address, userData.isReference],
         (err, results) => {
           connection.release();
           if (err) {

@@ -33,7 +33,7 @@ app.post("/register", async (req, res) => {
 })
 
 // post -login match
-const secretKey = 'ABCDEFGHIJKLMNOPQRSTUVWXYZPQRSTU'; 
+const secretKey = 'ABCDEFGHIJKLMNOPQRSTUVWXYZPQRSTU';
 app.post("/login", async (req, res) => {
   try {
     const body = req.body;
@@ -42,8 +42,8 @@ app.post("/login", async (req, res) => {
       if (result.success) {
         let uniqueId = result.user.user_id;
         // Sign the JWT
-        let token = jsonToken.sign({ uniqueId }, secretKey); 
-        res.status(200).json({ result, message: "Login success", accesss_token:token });
+        let token = jsonToken.sign({ uniqueId }, secretKey, { expiresIn: '30m' });
+        res.status(200).json({ result, accesss_token: token });
       } else {
         res.status(401).json({ message: "Incorrect username or password" });
       }
@@ -56,8 +56,32 @@ app.post("/login", async (req, res) => {
   }
 });
 
+// Middleware to validate token
+function validateToken(req, res, next) {
+  const authHeader = req.headers['authorization'];
+  //Managed the when no token provided
+  if (!authHeader) {
+    return res.status(401).json({ message: "No token provided" });
+  }
+  // console.log(authHeader, 'authHeader');
+  const token = authHeader.split(' ')[1];
+  // console.log(token, 'token');
+  //Managed the correct & expire token as verify
+  jsonToken.verify(token, secretKey, (err, decoded) => {
+    if (err) {
+      if (err.name === 'TokenExpiredError') {
+        return res.status(401).json({ message: "Token has expired" });
+      } else {
+        return res.status(401).json({ message: "Failed to authenticate token" });
+      }
+    }
+    // req.userId = decoded.uniqueId;
+    next();
+  });
+}
+
 // to get all users
-app.get('/register', async (req, res) => {
+app.get('/register', validateToken, async (req, res) => {
   try {
     const response = await getUserLogin()
     // console.log(response, 'response');
@@ -71,25 +95,30 @@ app.get('/register', async (req, res) => {
 
 // inquiry related api
 // get request
-app.get("/users", async (req, res) => {
-  res.json(await getUsers());
-});
-
-// post request
-app.post("/users", async (req, res) => {
+app.get("/users", validateToken, async (req, res) => {
   try {
-    const body = req.body;
-    // console.log("body", body);
-    await createUser(body); // to insert the data into the database
-    res.json({ message: "Success", data: body });
+    res.json(await getUsers());
   } catch (error) {
-    console.error("Error:", error);
-    res.status(500).json({ message: "Failed to create user" });
+    res.status(500).json({ message: "Failed to get all inquiry members" })
   }
 });
 
+// post request
+app.post("/users",
+  async (req, res) => {
+    try {
+      const body = req.body;
+      // console.log("body", body);
+      await createUser(body); // to insert the data into the database
+      res.json({ message: "Success", data: body });
+    } catch (error) {
+      console.error("Error:", error);
+      res.status(500).json({ message: "Failed to create user" });
+    }
+  });
+
 // delete req
-app.delete("/users/:id", async (req, res) => {
+app.delete("/users/:id", validateToken, async (req, res) => {
   try {
     let id = Number(req.params.id);
     console.log(req.params, "req.body delete");
@@ -102,7 +131,7 @@ app.delete("/users/:id", async (req, res) => {
 });
 
 // edit req
-app.patch("/users/:id", async (req, res) => {
+app.patch("/users/:id", validateToken, async (req, res) => {
   try {
     let id = Number(req.params.id);
     let body = req.body;
@@ -117,12 +146,12 @@ app.patch("/users/:id", async (req, res) => {
 
 // memeber realated funtions
 // get all members
-app.get("/addnewmember", async (req, res) => {
+app.get("/addnewmember", validateToken, async (req, res) => {
   res.json(await getMember());
 });
 
 // add new member
-app.post("/addnewmember", async (req, res) => {
+app.post("/addnewmember", validateToken, async (req, res) => {
   try {
     const body = req.body;
     // console.log("body", body);
@@ -135,7 +164,7 @@ app.post("/addnewmember", async (req, res) => {
 });
 
 // edit exist member
-app.patch("/addnewmember/:id", async (req, res) => {
+app.patch("/addnewmember/:id", validateToken, async (req, res) => {
   try {
     let id = Number(req.params.id);
     let body = req.body;
@@ -150,7 +179,7 @@ app.patch("/addnewmember/:id", async (req, res) => {
 
 // package list related apis
 // get package list
-app.get("/packages", async (req, res) => {
+app.get("/packages", validateToken, async (req, res) => {
   try {
     res.json(await getPackageList());
   } catch (error) {
@@ -159,7 +188,7 @@ app.get("/packages", async (req, res) => {
 })
 
 // create new package
-app.post("/packages", async (req, res) => {
+app.post("/packages", validateToken, async (req, res) => {
   try {
     const body = req.body;
     // console.log("body", body);

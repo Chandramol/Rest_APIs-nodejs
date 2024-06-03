@@ -371,6 +371,29 @@ function addNewPackage(data) {
   })
 }
 
+function generateQuery(query) {
+  // console.log(query,'query');
+  return new Promise(async (resolve, reject) => {
+    try {
+      const connection = await getConnection()
+      const id = Math.floor(Math.random() * 10000);
+      console.log(query,'query 1');
+      const sql = "INSERT INTO query_form (id,name,mobile,message) VALUES (?,?,?,?)";
+      connection.query(sql, [id, query.name, query.mobile, query.message], (err, results) => {
+        connection.release();
+        if (err) {
+          reject("Error executing query:", err);
+        } else {
+          console.log("Query results:", results);
+          resolve(results);
+        }
+      });
+    } catch (error) {
+      reject(error);
+    }
+  })
+}
+
 module.exports = {
   getUsers,
   createUser,
@@ -383,5 +406,6 @@ module.exports = {
   addNewPackage,
   getUserLogin,
   createLoginUser,
-  loginAuth
+  loginAuth,
+  generateQuery
 };

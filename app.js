@@ -377,7 +377,7 @@ function generateQuery(query) {
     try {
       const connection = await getConnection()
       const id = Math.floor(Math.random() * 10000);
-      console.log(query,'query 1');
+      console.log(query, 'query 1');
       const sql = "INSERT INTO query_form (id,name,mobile,message) VALUES (?,?,?,?)";
       connection.query(sql, [id, query.name, query.mobile, query.message], (err, results) => {
         connection.release();
@@ -394,6 +394,22 @@ function generateQuery(query) {
   })
 }
 
+function storeDataInDB(data) {
+  return new Promise(async (resolve, reject) => {
+    const connection = await getConnection();
+    const sql = "INSERT INTO chatfrom_users (userid, message,source) VALUES (?,?, ?)";
+    connection.query(sql, [data.userid, data.message, data.source], (err, results) => {
+      connection.release();
+      if (err) {
+        reject("Error executing query:", err);
+      } else {
+        console.log("Query results:", results);
+        resolve(results);
+      }
+    });
+  });
+}
+
 module.exports = {
   getUsers,
   createUser,
@@ -407,5 +423,6 @@ module.exports = {
   getUserLogin,
   createLoginUser,
   loginAuth,
-  generateQuery
+  generateQuery,
+  storeDataInDB
 };

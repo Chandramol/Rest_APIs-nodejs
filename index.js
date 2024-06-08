@@ -16,7 +16,7 @@ app.use(cors());
 const jsonToken = require("jsonwebtoken")
 
 // importing connection pool functions from database
-const { getUsers, createUser, deleteUser, editUser, createNewMember, getMember, editExistMember, getPackageList, addNewPackage, loginAuth, createLoginUser, getUserLogin,generateQuery } = require("./app");
+const { getUsers, createUser, deleteUser, editUser, createNewMember, getMember, editExistMember, getPackageList, addNewPackage, loginAuth, createLoginUser, getUserLogin, generateQuery } = require("./app");
 
 
 // login request
@@ -150,7 +150,7 @@ app.post("/generateQuery",
     try {
       const body = req.body;
       // console.log(body,'query body ');
-      await generateQuery(body); 
+      await generateQuery(body);
       res.json({ message: "Success", data: body });
     } catch (error) {
       console.error("Error:", error);

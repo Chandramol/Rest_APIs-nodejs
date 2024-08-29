@@ -1,6 +1,6 @@
 const express = require('express');
 const http = require('http');
-const {storeDataInDB } = require("./app");
+const {storeChatInDB } = require("./app");
 const app = express();
 const server = http.createServer(app);
 const io = require('socket.io')(server, {
@@ -26,15 +26,15 @@ io.on('connection', (socket) => {
     })
 
     socket.on('message_from_user', (data) => {
-        storeDataInDB({ userid: data.userid, message: data.message,source:'user' })
-        .then(() => console.log('Message stored in DB'))
+        storeChatInDB({ userid: data.userid, message: data.message,source:'user' })
+        .then(() => console.log('User Message stored in DB'))
         .catch(err => console.error('DB error:', err));
         socket.to('adminsocket').emit('message_to_admin', data);
     });
 
     socket.on('message_from_admin', (data) => {
-        storeDataInDB({ userid: data.userid, message: data.message,source:'admin' })
-        .then(() => console.log('Message stored in DB'))
+        storeChatInDB({ userid: data.userid, message: data.message,source:'admin' })
+        .then(() => console.log('Admin Message stored in DB'))
         .catch(err => console.error('DB error:', err));
         socket.to(data.userid).emit('message_to_user',data)
     });

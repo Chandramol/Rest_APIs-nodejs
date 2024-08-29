@@ -16,7 +16,7 @@ app.use(cors());
 const jsonToken = require("jsonwebtoken")
 
 // importing connection pool functions from database
-const { getUsers, createUser, deleteUser, editUser, createNewMember, getMember, editExistMember, getPackageList, addNewPackage, loginAuth, createLoginUser, getUserLogin, generateQuery } = require("./app");
+const { getUsers, createUser, deleteUser, editUser, createNewMember, getMember, editExistMember, getPackageList, addNewPackage, loginAuth, createLoginUser, getUserLogin, generateQuery,getChatList } = require("./app");
 
 
 // login request
@@ -208,6 +208,15 @@ app.post("/packages", validateToken, async (req, res) => {
     // console.log("body", body);
     await addNewPackage(body);
     res.json({ message: "Success", data: body });
+  } catch (error) {
+    console.error("Error:", error);
+  }
+})
+
+// get chat message of clients
+app.post('/getChatMessage',async (req,res)=>{
+  try {
+    res.json(await getChatList());
   } catch (error) {
     console.error("Error:", error);
   }

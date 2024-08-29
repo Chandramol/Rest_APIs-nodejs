@@ -394,11 +394,26 @@ function generateQuery(query) {
   })
 }
 
-function storeDataInDB(data) {
+function storeChatInDB(data) {
   return new Promise(async (resolve, reject) => {
     const connection = await getConnection();
     const sql = "INSERT INTO chatfrom_users (userid, message,source) VALUES (?,?, ?)";
     connection.query(sql, [data.userid, data.message, data.source], (err, results) => {
+      connection.release();
+      if (err) {
+        reject("Error executing query:", err);
+      } else {
+        resolve(results);
+      }
+    });
+  });
+}
+
+function getChatList(){
+  return new Promise(async (resolve, reject) => {
+    const connection = await getConnection();
+    const sql = "SELECT * FROM chatfrom_users";
+    connection.query(sql, (err, results) => {
       connection.release();
       if (err) {
         reject("Error executing query:", err);
@@ -424,5 +439,6 @@ module.exports = {
   createLoginUser,
   loginAuth,
   generateQuery,
-  storeDataInDB
+  storeChatInDB,
+  getChatList
 };

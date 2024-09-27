@@ -14,26 +14,13 @@ app.use(cors());
 
 // json token 
 const jsonToken = require("jsonwebtoken")
+const secretKey = 'ABCDEFGHIJKLMNOPQRSTUVWXYZPQRSTU';
 
 // importing connection pool functions from database
 const { getUsers, createUser, deleteUser, editUser, createNewMember, getMember, editExistMember, getPackageList, addNewPackage, loginAuth, createLoginUser, getUserLogin, generateQuery,getChatList } = require("./app");
 
 
 // login request
-// post -login register
-app.post("/register", async (req, res) => {
-  try {
-    const body = req.body;
-    await createLoginUser(body);
-    res.json({ message: "Success", data: body });
-  } catch (error) {
-    console.error("Error:", error);
-    res.status(500).json({ message: "Failed to login user" });
-  }
-})
-
-// post -login match
-const secretKey = 'ABCDEFGHIJKLMNOPQRSTUVWXYZPQRSTU';
 app.post("/login", async (req, res) => {
   try {
     const body = req.body;
@@ -63,9 +50,7 @@ function validateToken(req, res, next) {
   if (!authHeader) {
     return res.status(401).json({ message: "No token provided" });
   }
-  // console.log(authHeader, 'authHeader');
   const token = authHeader.split(' ')[1];
-  // console.log(token, 'token');
   //Managed the correct & expire token as verify
   jsonToken.verify(token, secretKey, (err, decoded) => {
     if (err) {
@@ -80,8 +65,20 @@ function validateToken(req, res, next) {
   });
 }
 
+// post -login register
+app.post("/registerNewUser", async (req, res) => {
+  try {
+    const body = req.body;
+    await createLoginUser(body);
+    res.json({ message: "Success", data: body });
+  } catch (error) {
+    console.error("Error:", error);
+    res.status(500).json({ message: "Failed to login user" });
+  }
+})
+
 // to get all users
-app.get('/register', validateToken, async (req, res) => {
+app.get('/register',validateToken, async (req, res) => {
   try {
     const response = await getUserLogin()
     // console.log(response, 'response');

@@ -57,14 +57,14 @@ function createLoginUser(data) {
       const connection = await getConnection();
       const user_id = Math.floor(Math.random() * 10000);
       const sql =
-        "INSERT INTO login_details (user_id, email, password, superUser) VALUES (?, ?, ?, ?)";
+        "INSERT INTO login_details (user_id, username, email, password, superUser) VALUES (?, ?, ?, ?,?)";
       connection.query(
         sql,
-        [user_id, data.email, data.password, data.superUser],
+        [user_id,data.username, data.email, data.password, data.superUser],
         (err, results) => {
           connection.release();
           if (err) {
-            console.log(err);
+            console.log("Err",err);
             reject("Error executing insert query:", err);
           } else {
             resolve(results);

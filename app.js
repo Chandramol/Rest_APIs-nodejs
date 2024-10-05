@@ -77,6 +77,61 @@ function createLoginUser(data) {
   });
 }
 
+// delete login user
+function deleteLoginUser(id) {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const connection = await getConnection();
+      const sql = `DELETE FROM login_details WHERE user_id = ${id}`;
+
+      connection.query(sql, (error, results) => {
+        if (error) {
+          reject("Error deleting query", error);
+        } else {
+          resolve("delete results", results);
+        }
+        connection.release();
+      });
+    } catch (error) {
+      reject(error);
+    }
+  });
+}
+
+// edit login user
+function editLoginUser(id, data) {
+  console.log(id, data, "edit");
+  return new Promise(async (resolve, reject) => {
+    try {
+      const connection = await getConnection();
+      const sql = "UPDATE login_details SET ? WHERE user_id = ?";
+
+      connection.query(
+        sql,
+        [
+          {
+            username: data.username,
+            email: data.email,
+            password: data.password,
+            superUser: data.superUser,
+          },
+          id,
+        ],
+        (error, results) => {
+          if (error) {
+            reject("Error editing query", error);
+          } else {
+            resolve("edited results", results);
+          }
+          connection.release();
+        }
+      );
+    } catch (error) {
+      reject(error);
+    }
+  });
+}
+
 function loginAuth(data) {
   return new Promise(async (resolve, reject) => {
     try {
@@ -440,5 +495,7 @@ module.exports = {
   loginAuth,
   generateQuery,
   storeChatInDB,
-  getChatList
+  getChatList,
+  deleteLoginUser,
+  editLoginUser
 };
